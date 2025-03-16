@@ -74,15 +74,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Todo List</title>
-    <h1>Todo List</h1>
-    {{todoList}}
     <div id="app">
       <div class="todo-container">
         <div class="todo-header">
           <h1>Todo List</h1>
-          {{todoList}}
         </div>
-
         <input
           type="text"
           class="todo-input"
@@ -90,11 +86,10 @@
           @keydown.enter="addTodo"
           v-model="inputText"
         />
-
         <ul class="todo-list">
           <li
             class="todo-item"
-            :class="{completed: todo.completed} "
+            :class="{completed: todo.completed}"
             v-for="todo in todoList"
           >
             <input
@@ -103,12 +98,6 @@
               v-model="todo.completed"
             />
             {{todo.text}}
-            <button class="todo-delete" @click="delete">Delete</button>
-          </li>
-
-          <li class="todo-item completed">
-            <input type="checkbox" class="todo-checkbox" />
-            完成事項
             <button
               class="todo-delete"
               @click="todoList.splice(todoList.indexOf(todo), 1)"
@@ -123,15 +112,22 @@
       import {
         createApp,
         ref,
-        watch,
       } from "https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.13/vue.esm-browser.min.js";
-
-      const todoString = localStorage.getItem("todos");
-      const todos = todoString ? JSON.parse(todoString) : {};
 
       createApp({
         setup() {
-          const todoList = ref(todos);
+          const todoList = ref([
+            {
+              id: Date.now(),
+              text: "代辦A",
+              completed: false,
+            },
+            {
+              id: Date.now() + 1,
+              text: "代辦B",
+              completed: true,
+            },
+          ]);
 
           const inputText = ref("");
 
@@ -143,17 +139,6 @@
             });
             inputText.value = "";
           };
-          //觀測集合變化，寫入localStorage
-          watch(
-            //觀測目標
-            todoList,
-            //當資料變化時執行的方法
-            () => {
-              localStorage.setItem("todos", JSON.stringify(todoList.value));
-            },
-            //深層觀測
-            { deep: true }
-          );
 
           return { todoList, inputText, addTodo };
         },
